@@ -78,3 +78,17 @@ def test_instantiate_from_csv(setup_test_csv):
     assert item2.name == "Тестовый товар 2"
     assert item2.price == 75.5
     assert item2.quantity == 5
+
+def test_repr_from_item():
+    item1 = Item("somthing", 22000, 9)
+    item2 = Item("Алибаба", 4, 13)
+
+    assert repr(item1) == "Item('somthing', 22000, 9)"
+    assert repr(item2) == "Item('Алибаба', 4, 13)"
+
+def test_str_from_item():
+    item1 = Item("somthing", 22000, 9)
+    item2 = Item("Алибаба", 4, 13)
+
+    assert str(item1) == 'somthing'
+    assert str(item2) == 'Алибаба'
