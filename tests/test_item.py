@@ -1,5 +1,6 @@
 """Здесь надо написать тесты с использованием pytest для модуля item."""
 import pytest
+import csv
 import os
 from src.item import Item
 
@@ -49,18 +50,16 @@ def test_string_to_number(s, expected):
 
 
 @pytest.fixture
-def setup_test_csv():
-    test_csv_content = """
-    name,price,quantity
-    Тестовый товар 1,50.0,10
-    Тестовый товар 2,75.5,5
-    """
-    with open('test_items.csv', 'w', encoding='utf-8') as f:
-        f.write(test_csv_content)
-
-    yield 'test_items.csv'
-
-    os.remove('test_items.csv')
+def setup_test_csv(tmp_path):
+    # Создание временного CSV-файла для тестирования
+    file_path = tmp_path / "test_items.csv"
+    with open(file_path, 'w', newline='', encoding='cp1251') as csvfile:
+        fieldnames = ["name", "price", "quantity"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow({"name": "Тестовый товар 1", "price": "50.0", "quantity": "10"})
+        writer.writerow({"name": "Тестовый товар 2", "price": "75.5", "quantity": "5"})
+    return file_path
 
 
 def test_instantiate_from_csv(setup_test_csv):
