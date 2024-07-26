@@ -3,6 +3,7 @@ import pytest
 import csv
 import os
 from src.item import Item
+from src.phone import Phone
 
 @pytest.fixture
 def test_item_initialization():
@@ -91,3 +92,13 @@ def test_str_from_item():
 
     assert str(item1) == 'somthing'
     assert str(item2) == 'Алибаба'
+
+def test_add_from_item():
+    item1 = Item('Iphone', 1200, 3)
+    phone1 = Phone('Bebe', 12030, 1, 2)
+
+    assert item1 + phone1 == 4
+
+
+
+

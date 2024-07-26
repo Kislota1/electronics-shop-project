@@ -74,4 +74,8 @@ class Item:
         """
         return int(float(s))
 
+    def __add__(self, other):
+        if issubclass(other.__class__, self.__class__):
+            return self.quantity + other.quantity
+
 
