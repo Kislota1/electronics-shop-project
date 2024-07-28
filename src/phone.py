@@ -1,5 +1,6 @@
 from src.item import Item
 
+
 class Phone(Item):
     def __init__(self, name: str, price: float, quantity: int, number_of_sim: int):
         super().__init__(name, price, quantity)
@@ -9,6 +10,5 @@ class Phone(Item):
         return f"{self.__class__.__name__}('{self.name}', {self.price}, {self.quantity}, {self.number_of_sim})"
 
     def check_number_of_sim(self, number_of_sim):
-        if number_of_sim < 0:
+        if number_of_sim <= 0:
             raise ValueError('Количество физических SIM-карт должно быть целым числом больше нуля.')
-
