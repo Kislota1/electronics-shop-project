@@ -1,5 +1,12 @@
 import csv
 
+
+class InstantiateCSVError(Exception):
+    def __init__(self, message="Файл item.csv поврежден"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class Item:
     """
     Класс для представления товара в магазине.
@@ -53,19 +60,36 @@ class Item:
         """
         self.price = self.price * self.pay_rate
 
+
+
     @classmethod
-    def instantiate_from_csv(cls, file_path: str) -> None:
+    def instantiate_from_csv(cls, file_path: str = 'item.csv') -> None:
         """
         Создает экземпляры класса Item из данных CSV-файла.
         """
         cls.all.clear()
-        with open(file_path, newline='', encoding='cp1251') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                name = row['name']
-                price = float(row['price'])
-                quantity = int(row['quantity'])
-                cls(name, price, quantity)
+        required_columns = {'name', 'price', 'quantity'}
+
+        try:
+            with open(file_path, newline='', encoding='cp1251') as csvfile:
+                reader = csv.DictReader(csvfile)
+
+                missing_columns = required_columns - set(reader.fieldnames)
+                if missing_columns:
+                    raise InstantiateCSVError(f"Файл item.csv поврежден. Отсутствуют колонки: {', '.join(missing_columns)}")
+
+                for row in reader:
+                    try:
+                        name = row['name']
+                        price = float(row['price'])
+                        quantity = int(row['quantity'])
+                        cls(name, price, quantity)
+                    except ValueError as e:
+                        print(f"Ошибка в данных строки {row}: {e}")
+        except FileNotFoundError:
+            print(f"Отсутствует файл {file_path}")
+        except InstantiateCSVError as e:
+            print(e)
 
     @staticmethod
     def string_to_number(s: str) -> int:
@@ -77,5 +101,7 @@ class Item:
     def __add__(self, other):
         if issubclass(other.__class__, self.__class__):
             return self.quantity + other.quantity
+
+
 
 

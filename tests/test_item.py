@@ -2,7 +2,7 @@
 import pytest
 import csv
 import os
-from src.item import Item
+from src.item import Item, InstantiateCSVError
 from src.phone import Phone
 
 @pytest.fixture
@@ -99,6 +99,40 @@ def test_add_from_item():
 
     assert item1 + phone1 == 4
 
+@pytest.fixture
+def csv_file_path(tmpdir):
+    file = tmpdir.join("src.item.csv")
+    return str(file)
+
+# Тест для проверки, что выбрасывается исключение FileNotFoundError
+def test_file_not_found(csv_file_path):
+    with pytest.raises(FileNotFoundError):
+        Item.instantiate_from_csv(file_path="non_existent_file.csv")
+
+# Тест для проверки, что выбрасывается исключение InstantiateCSVError
+def test_incomplete_csv_file(csv_file_path):
+    with open(csv_file_path, 'w', encoding='cp1251') as file:
+        file.write("name,price\n")  # Поврежденный файл без колонки quantity
+
+    with pytest.raises(InstantiateCSVError):
+        Item.instantiate_from_csv(file_path=csv_file_path)
+
+# Тест для проверки корректной работы метода instantiate_from_csv
+def test_valid_csv_file(csv_file_path):
+    with open(csv_file_path, 'w', encoding='cp1251') as file:
+        file.write("name,price,quantity\n")
+        file.write("item1,100.0,10\n")
+        file.write("item2,200.5,20\n")
+
+    Item.instantiate_from_csv(file_path=csv_file_path)
+
+    assert len(Item.all) == 2
+    assert Item.all[0].name == "item1"
+    assert Item.all[0].price == 100.0
+    assert Item.all[0].quantity == 10
+    assert Item.all[1].name == "item2"
+    assert Item.all[1].price == 200.5
+    assert Item.all[1].quantity == 20
 
 
 
